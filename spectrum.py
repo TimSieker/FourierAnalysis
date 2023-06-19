@@ -1,8 +1,3 @@
-# Description: Functions to analyse timeseries on their spetrum.
-# Author:      Tim Sieker
-# E-mail:      timsieker@gmail.com
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal
@@ -17,10 +12,10 @@ def check_data(x, t=None, x_threshold=None, fill_value=np.nan):
     :param x_threshold (tuple): lower and upper bound for x, values outside of range will be replaced with nans
     :return: x
     '''
-
-
+    warning=False
     ### Check for nans first
     if np.isnan(x).any():
+        warning = True
         warnings.warn('Nans detected in data. Perform interpolation.')
 
     ### check for missing time steps
@@ -29,6 +24,7 @@ def check_data(x, t=None, x_threshold=None, fill_value=np.nan):
         timesteps = np.unique(t_diff)
 
         if len(timesteps) != 1:
+            warning=True
             warnings.warn('Uneven timesteps detected in data. Perform interpolation on a new time array (t_new).')
 
 
@@ -38,15 +34,17 @@ def check_data(x, t=None, x_threshold=None, fill_value=np.nan):
         upper_bound = x_threshold[1]
 
         mask = (x < lower_bound) | (x > upper_bound)
+        
+        if np.nansum(mask) > 0:
+            warning=True
+            if fill_value is not None:
+                x[mask] = fill_value
 
-        if fill_value is not None:
-            x[mask] = fill_value
-
-            warnings.warn('Problematic values detected in data. Perform interpolation.')
-        else:
-            warnings.warn('Problematic values detected in data.')
-
-
+                warnings.warn('Problematic values detected in data. Perform interpolation.')
+            else:
+                warnings.warn('Problematic values detected in data.')
+    if not warning:
+        print('Everything is looking good')
 
 
 def dft(x):
