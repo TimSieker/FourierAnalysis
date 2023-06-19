@@ -1,3 +1,8 @@
+# Description: Functions to analyse timeseries on their spetrum.
+# Author:      Tim Sieker
+# E-mail:      timsieker@gmail.com
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal
